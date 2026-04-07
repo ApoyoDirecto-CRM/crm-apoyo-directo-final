@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-4">
+    
+    <ul class="nav nav-pills mb-4 border-bottom border-dark pb-3">
+        <li class="nav-item">
+            <a class="nav-link active bg-dark text-white fw-bold border border-dark me-2" href="{{ url_for('main.productividad') }}"><i class="fas fa-chart-bar me-2"></i>Métricas de Productividad</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark fw-bold border border-dark" href="{{ url_for('main.visor_cartera') }}"><i class="fas fa-globe me-2"></i>Visor Global de Cartera</a>
+        </li>
+    </ul>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-user-clock me-2"></i>Productividad Diaria <span class="badge bg-danger fs-6 heartbeat-badge"><i class="fas fa-satellite-dish me-1"></i> Radar en Vivo</span></h3>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-dark fw-bold border-2">Regresar al Panel</a>
+    </div>
+
+    <div class="card shadow-sm border-dark border-2 mb-5">
+        <div class="card-header bg-dark text-white fw-bold">
+            <i class="fas fa-stopwatch me-2"></i> TIEMPO EN LÍNEA (SESIÓN ACTUAL)
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>ASESOR</th>
+                        <th>HORA DE ENTRADA</th>
+                        <th>TIEMPO TRANSCURRIDO</th>
+                    </tr>
+                </thead>
+                <tbody id="contenedor-relojes">
+                    {% for a in asesores_reales %}
+                    <tr>
+                        <td class="fw-bold text-uppercase">{{ a.nombre }}</td>
+                        <td class="text-muted fw-bold text-primary">{{ a.login_cdmx.strftime('%H:%M:%S') if a.login_cdmx else 'N/A' }}</td>
+                        <td class="fw-bold fs-5 cronometro-metrica {% if a.is_online %}text-primary{% else %}text-secondary{% endif %}" 
+                            data-login="{{ a.ultimo_login.isoformat() if a.ultimo_login else '' }}"
+                            data-actividad="{{ a.ultima_actividad.isoformat() if a.ultima_actividad else '' }}"
+                            data-online="{{ 'true' if a.is_online else 'false' }}">
+                            00:00:00
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-dark border-2">
+        <div class="card-body p-0">
+            <div class="table-responsive" id="contenedor-reporte">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th style="width: 100px;">Hora Local</th>
+                            {% for asesor in asesores %}
+                            <th class="text-uppercase">{{ asesor }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hora, datos_asesores in reporte.items() %}
+                        <tr>
+                            <td class="text-center fw-bold bg-light fs-5">{{ hora }}</td>
+                            
+                            {% for asesor in asesores %}
+                            <td class="p-3">
+                                {% if asesor in datos_asesores %}
+                                    <div class="small">
+                                        {% for resultado, cantidad in datos_asesores[asesor]['resultados'].items() %}
+                                            <div class="d-flex justify-content-between mb-1 border-bottom border-light pb-1">
+                                                <span class="text-muted fw-bold">{{ resultado }}</span>
+                                                <span class="badge {% if resultado == 'Promesa de Pago' %}bg-success{% elif resultado == 'Realizó Pago' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                    {{ cantidad }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                        
+                                        <div class="mt-2 text-end">
+                                            <span class="fw-bold text-dark d-block">Llamadas: {{ datos_asesores[asesor]['subtotal_llamadas'] }}</span>
+                                            {% if datos_asesores[asesor]['monto_hora'] > 0 %}
+                                                <span class="fw-bold text-success d-block border-top border-success mt-1 pt-1">
+                                                    Recuperado: ${{ "{:,.2f}".format(datos_asesores[asesor]['monto_hora']) }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center text-muted opacity-50"><i class="fas fa-minus"></i></div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="{{ asesores|length + 1 }}" class="text-center py-5 text-muted fw-bold">
+                                Aún no hay gestiones registradas el día de hoy.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                    {% if asesores %}
+                    <tfoot class="table-dark">
+                        <tr>
+                            <td class="text-center fw-bold align-middle fs-6">RESUMEN DEL DÍA</td>
+                            {% for asesor in asesores %}
+                            <td class="text-end p-3">
+                                <div class="fw-bold text-light mb-1">Total Llamadas: <span class="fs-5">{{ totales[asesor]['total_llamadas'] }}</span></div>
+                                <div class="fw-bold text-warning border-top border-secondary mt-2 pt-2">
+                                    Total Promesas:<br>
+                                    <span class="fs-5">${{ "{:,.2f}".format(totales[asesor]['total_monto']) }}</span>
+                                </div>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .heartbeat-badge {
+        animation: heartbeat 2s infinite;
+    }
+    @keyframes heartbeat {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+</style>
+
+<script>
+    let relojInterval;
+
+    // 1. Lógica matemática de los cronómetros
+    function actualizarCronometros() {
+        const ahora = new Date();
+        document.querySelectorAll('.cronometro-metrica').forEach(celda => {
+            const loginStr = celda.getAttribute('data-login');
+            const actividadStr = celda.getAttribute('data-actividad');
+            const isOnline = celda.getAttribute('data-online') === 'true';
+            
+            if(!loginStr) {
+                celda.innerText = "N/A";
+                return;
+            }
+            
+            const loginTime = new Date(loginStr + 'Z');
+            let diff = 0;
+            
+            if (isOnline) {
+                diff = Math.floor((ahora - loginTime) / 1000);
+            } else {
+                const actividadTime = new Date(actividadStr + 'Z');
+                diff = Math.floor((actividadTime - loginTime) / 1000);
+            }
+            
+            if(diff < 0) diff = 0;
+            let h = Math.floor(diff / 3600);
+            let m = Math.floor((diff % 3600) / 60);
+            let s = diff % 60;
+            
+            let tiempo = (h<10?'0'+h:h)+":"+(m<10?'0'+m:m)+":"+(s<10?'0'+s:s);
+            celda.innerText = isOnline ? tiempo : tiempo + " (OFFLINE)";
+        });
+    }
+
+    // 2. Encendido seguro de relojes (Evita que se multipliquen)
+    function iniciarRelojes() {
+        if (relojInterval) clearInterval(relojInterval);
+        actualizarCronometros();
+        relojInterval = setInterval(actualizarCronometros, 1000);
+    }
+
+    // 3. El Escáner de la Sombra (Shadow Fetching)
+    function escanearTableroEnVivo() {
+        // Pide al servidor la página actual en silencio
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                // Parsea el código como si fuera un documento oculto
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+
+                // Extrae SOLO los datos de los relojes y reemplaza la tabla
+                const nuevosRelojes = doc.getElementById('contenedor-relojes');
+                if (nuevosRelojes) {
+                    document.getElementById('contenedor-relojes').innerHTML = nuevosRelojes.innerHTML;
+                }
+
+                // Extrae SOLO los datos de productividad (Dinero/Llamadas) y reemplaza la tabla
+                const nuevoReporte = doc.getElementById('contenedor-reporte');
+                if (nuevoReporte) {
+                    document.getElementById('contenedor-reporte').innerHTML = nuevoReporte.innerHTML;
+                }
+
+                // Reinicia los cronómetros para que sigan corriendo en la nueva tabla inyectada
+                iniciarRelojes();
+            })
+            .catch(error => console.error("Error en el Radar:", error));
+    }
+
+    // Arranque Inicial
+    document.addEventListener("DOMContentLoaded", function() {
+        iniciarRelojes();
+        // Ejecuta el escáner cada 10 segundos
+        setInterval(escanearTableroEnVivo, 10000);
+    });
+</script>
+{% endblock %}

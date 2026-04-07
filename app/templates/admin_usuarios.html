@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users-cog me-2"></i>Administración de Usuarios</h2>
+        <a href="{{ url_for('main.crear_asesor') }}" class="btn btn-success fw-bold border-2 shadow-sm"><i class="fas fa-plus me-2"></i>NUEVO USUARIO</a>
+    </div>
+
+    <div class="card shadow-sm border-dark border-2">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Usuario (Login)</th>
+                        <th>Rol</th>
+                        <th class="text-center">Acciones de Seguridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td class="fw-bold text-muted">{{ u.id }}</td>
+                        <td class="fw-bold">{{ u.nombre }}</td>
+                        <td><code>{{ u.usuario }}</code></td>
+                        <td>
+                            <span class="badge {% if u.rol == 'GERENTE' %}bg-danger{% elif u.rol == 'SUPERVISOR' %}bg-warning text-dark{% else %}bg-primary{% endif %}">
+                                {{ u.rol }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <form method="POST" class="d-inline-block me-2" onsubmit="return confirm('¿Seguro que deseas cambiar la contraseña de {{ u.usuario }}?');">
+                                <input type="hidden" name="cambiar_pass_id" value="{{ u.id }}">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="nueva_password" class="form-control border-dark" placeholder="Nueva Clave" required style="max-width: 120px;">
+                                    <button type="submit" class="btn btn-dark fw-bold">Actualizar</button>
+                                </div>
+                            </form>
+
+                            {% if u.id != session.get('usuario_id') %}
+                            <form method="POST" class="d-inline-block" onsubmit="return confirm('ALERTA: ¿Estás completamente seguro de eliminar al usuario {{ u.usuario }}? Esta acción no se puede deshacer.');">
+                                <input type="hidden" name="eliminar_id" value="{{ u.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger fw-bold border-2"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                            {% else %}
+                            <span class="badge bg-secondary">Tu Cuenta</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

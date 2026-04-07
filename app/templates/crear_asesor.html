@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow border-0 mx-auto" style="max-width: 450px;">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i> Alta de Nuevo Asesor</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="POST" action="{{ url_for('main.crear_asesor') }}">
+                
+                <div class="mb-3">
+                    <label class="fw-bold text-muted">Nombre Completo</label>
+                    <input type="text" name="nombre" placeholder="Ej. Juan Pérez" class="form-control" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="fw-bold text-muted">Usuario (Login)</label>
+                    <input type="text" name="usuario" placeholder="Ej. jperez" class="form-control" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="fw-bold text-muted">Contraseña</label>
+                    <input type="password" name="password" placeholder="Mínimo 6 caracteres" class="form-control" required>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle me-1"></i> Registrar Asesor
+                    </button>
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+                        Volver al Panel
+                    </a>
+                </div>
+                <div class="mb-3">
+    <label class="fw-bold text-muted">Rol del Usuario</label>
+    <select name="rol" class="form-select" required>
+        <option value="ASESOR" selected>ASESOR (Operación)</option>
+        <option value="SUPERVISOR">SUPERVISOR (Reportes)</option>
+        <option value="GERENTE">GERENTE (Control Total)</option>
+    </select>
+</div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Apoyo Directo - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            /* Gradiente basado en tu imagen */
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 40%, #6f42c1 80%, #4b0082 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .brand-logo {
+            font-size: 3rem;
+            color: #4b0082;
+            margin-bottom: 0;
+        }
+        .brand-text {
+            color: #2c004e;
+            font-weight: 900;
+            font-size: 2rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+        .brand-sub {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+        .input-group-text {
+            background: transparent;
+            border-right: none;
+            color: #6c757d;
+        }
+        .form-control {
+            border-left: none;
+            padding-left: 0;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
+        .input-group {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .input-group:focus-within {
+            border-color: #6f42c1;
+            box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+        }
+        .btn-login {
+            background: linear-gradient(to right, #2c004e, #800080);
+            border: none;
+            border-radius: 50px;
+            padding: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(to right, #1a0033, #660066);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <i class="fas fa-handshake brand-logo"></i>
+        <h1 class="brand-text">APOYO<br>DIRECTO</h1>
+        <p class="brand-sub">CRM de Cobranza v1.0 - 2026</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} small py-2 mb-3">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="text-start mb-1 ms-1 small fw-bold text-muted">Usuario</div>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" name="usuario" class="form-control" placeholder="Introduce tu usuario" required autocomplete="off">
+            </div>
+
+            <div class="text-start mb-1 ms-1 small fw-bold text-muted">Contraseña</div>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Introduce tu contraseña" required>
+                <span class="input-group-text border-start-0" style="cursor: pointer;" onclick="togglePass()">
+                    <i class="fas fa-eye-slash" id="eye-icon"></i>
+                </span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login mt-3 shadow">INICIAR SESIÓN</button>
+        </form>
+    </div>
+
+    <script>
+        // Script simple para mostrar/ocultar contraseña
+        function togglePass() {
+            var input = document.getElementById("password");
+            var icon = document.getElementById("eye-icon");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.className = "fas fa-eye";
+            } else {
+                input.type = "password";
+                icon.className = "fas fa-eye-slash";
+            }
+        }
+    </script>
+</body>
+</html>

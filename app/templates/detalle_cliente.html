@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-2 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Volver al Panel
+        </a>
+        
+        <a href="{{ url_for('main.gestionar_cliente', cliente_id=cliente.id) }}" class="btn btn-success btn-lg fw-bold shadow-sm animate-pulse">
+            <i class="fas fa-headset me-2"></i>Iniciar Gestión de Cliente
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-address-card me-2"></i>Expediente del Cliente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <p class="text-muted mb-0 small">Nombre Completo</p>
+                    <h5 class="text-primary fw-bold">{{ cliente.nombre }}</h5>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <p class="text-muted mb-0 small">Número de Cuenta</p>
+                    <p class="fs-5">{{ cliente.numero_cuenta }}</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <p class="text-muted mb-0 small">Estatus Operativo</p>
+                    <span class="badge fs-6
+                        {% if cliente.estatus in ['Promesa de Pago', 'Realizó Pago'] %}bg-success
+                        {% elif cliente.estatus in ['Negativa', 'Ilocalizable', 'No Contesta'] %}bg-danger
+                        {% elif cliente.estatus in ['Pendiente', 'Buzón de Voz', 'Mensaje con Tercero'] %}bg-warning text-dark
+                        {% else %}bg-secondary{% endif %}">
+                        {{ cliente.estatus }}
+                    </span>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <p class="text-muted mb-0 small">Teléfono</p>
+                    <p class="fw-bold text-dark"><i class="fas fa-phone-alt me-2 text-success"></i>{{ cliente.telefono }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="text-muted mb-0 small">Deuda Total</p>
+                    <p class="fw-bold text-danger">${{ "{:,.2f}".format(cliente.saldo_total) }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="text-muted mb-0 small">Pago Mínimo Requerido</p>
+                    <p class="fw-bold text-dark">${{ "{:,.2f}".format(cliente.pago_minimo) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mb-3"><i class="fas fa-history me-2 text-secondary"></i>Historial de Gestiones Previas</h5>
+    <div class="list-group shadow-sm border-0">
+        {% for g in cliente.gestiones|sort(attribute='fecha', reverse=True) %}
+        <div class="list-group-item list-group-item-action py-3">
+            <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                <span class="badge 
+                    {% if g.resultado in ['Promesa de Pago', 'Realizó Pago'] %}bg-success
+                    {% elif g.resultado in ['Negativa', 'Ilocalizable', 'No Contesta'] %}bg-danger
+                    {% elif g.resultado in ['Pendiente', 'Buzón de Voz', 'Mensaje con Tercero'] %}bg-warning text-dark
+                    {% else %}bg-secondary{% endif %}">
+                    {{ g.resultado }}
+                </span>
+                <small class="text-muted"><i class="far fa-clock me-1"></i>{{ g.fecha_local.strftime('%d/%m/%Y %H:%M') }}</small>
+            </div>
+            <p class="mb-2 text-dark">{{ g.comentario }}</p>
+            <div class="d-flex align-items-center small text-muted">
+                <i class="fas fa-user-tie me-2"></i>Gestionado por: <strong class="ms-1">{{ g.usuario.nombre }}</strong>
+            </div>
+        </div>
+        {% else %}
+        <div class="p-5 text-center text-muted bg-white border rounded">
+            <i class="fas fa-inbox fa-3x mb-3"></i>
+            <p class="mb-0">Este cliente no tiene gestiones registradas aún.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

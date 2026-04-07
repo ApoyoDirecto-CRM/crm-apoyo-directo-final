@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <ul class="nav nav-pills mb-4 border-bottom border-dark pb-3">
+        <li class="nav-item">
+            <a class="nav-link text-dark fw-bold border border-dark me-2" href="{{ url_for('main.productividad') }}"><i class="fas fa-chart-bar me-2"></i>Métricas de Productividad</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active bg-dark text-white fw-bold border border-dark" href="{{ url_for('main.visor_cartera') }}"><i class="fas fa-globe me-2"></i>Visor Global de Cartera</a>
+        </li>
+    </ul>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-globe me-2"></i>Visor Global de Cartera</h2>
+        
+        <div class="btn-group shadow-sm" role="group">
+            <a href="{{ url_for('main.visor_cartera', filtro='todas') }}" class="btn {% if filtro_actual == 'todas' %}btn-dark{% else %}btn-outline-dark{% endif %} fw-bold border-2">TODA LA CARTERA</a>
+            <a href="{{ url_for('main.visor_cartera', filtro='grupal') }}" class="btn {% if filtro_actual == 'grupal' %}btn-dark{% else %}btn-outline-dark{% endif %} fw-bold border-2">SOLO GRUPALES</a>
+            <a href="{{ url_for('main.visor_cartera', filtro='asignada') }}" class="btn {% if filtro_actual == 'asignada' %}btn-dark{% else %}btn-outline-dark{% endif %} fw-bold border-2">ASIGNADAS (PERSONAL)</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-dark border-2">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 70vh;">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-dark" style="position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th>Cuenta</th>
+                            <th>Nombre del Cliente</th>
+                            <th>Saldo Exigible</th>
+                            <th>Estatus Actual</th>
+                            <th>Propietario (Asesor)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in cuentas %}
+                        <tr>
+                            <td class="fw-bold"><code>{{ c.numero_cuenta }}</code></td>
+                            <td>{{ c.nombre }}</td>
+                            <td class="text-danger fw-bold">${{ "{:,.2f}".format(c.saldo_total) }}</td>
+                            <td><span class="badge bg-secondary text-uppercase">{{ c.estatus }}</span></td>
+                            <td class="fw-bold">
+                                {% if c.asesor_id %}
+                                    <span class="text-primary">{{ c.asesor.nombre }}</span>
+                                {% else %}
+                                    <span class="badge bg-dark border border-light">BANDEJA GRUPAL</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted fw-bold">No hay cuentas activas bajo este filtro.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mb-5 mt-4 px-4">
+    
+    <div class="bg-white border border-dark border-3 shadow-sm rounded-1">
+        
+        <div class="d-flex justify-content-between align-items-end border-bottom border-dark border-3 bg-light px-3 pt-3">
+            
+            <div class="d-flex align-items-end">
+                <div id="cronometro-box" class="bg-white border border-dark border-bottom-0 border-2 text-center fw-bold px-4 py-2 me-3" style="font-size: 1.3rem; min-width: 120px;">
+                    <span id="timer">00:00</span>
+                </div>
+
+                <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-dark border-dark border-bottom-0 border-2 rounded-0 px-4" id="gestion-tab" data-bs-toggle="tab" data-bs-target="#gestion" type="button" role="tab" style="letter-spacing: 1px;">DATOS Y GESTIÓN</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-dark border-dark border-bottom-0 border-2 rounded-0 px-4" id="script-tab" data-bs-toggle="tab" data-bs-target="#script" type="button" role="tab" style="letter-spacing: 1px;">SCRIPT</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="pb-2 d-flex gap-2">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-dark fw-bold border-2 shadow-sm rounded-0 px-3 text-uppercase" title="Regresar al Buscador">
+                    <i class="fas fa-home me-1"></i> Inicio
+                </a>
+                
+                {% if cliente.asesor_id == None %}
+                    <a href="{{ url_for('main.siguiente_cliente_grupal', actual_id=cliente.id) }}" class="btn btn-dark fw-bold border-2 shadow-sm rounded-0 px-4 text-uppercase">
+                        Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('main.siguiente_cliente', actual_id=cliente.id) }}" class="btn btn-dark fw-bold border-2 shadow-sm rounded-0 px-4 text-uppercase">
+                        Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="tab-content p-4" id="myTabContent">
+            
+            <div class="tab-pane fade show active" id="gestion" role="tabpanel">
+                <form method="POST">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted mb-0">NÚMERO DE CUENTA</label>
+                            <div class="border border-dark p-2 fw-bold bg-light fs-5">{{ cliente.numero_cuenta }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted mb-0">NOMBRE DEL TITULAR</label>
+                            <div class="border border-dark p-2 fw-bold bg-light text-truncate fs-5" title="{{ cliente.nombre }}">{{ cliente.nombre }}</div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-muted mb-0">TELÉFONO 1</label>
+                            <div class="border border-dark p-2 fw-bold bg-light text-center fs-5">{{ cliente.telefono or 'N/A' }}</div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-muted mb-0">PRODUCTO</label>
+                            <div class="border border-dark p-2 fw-bold bg-light text-center text-uppercase">{{ cliente.producto or 'N/A' }}</div>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label small fw-bold text-muted mb-0">ESTATUS</label>
+                            <div class="border border-dark p-2 fw-bold text-white bg-dark text-center text-uppercase" style="font-size: 0.8rem;">{{ cliente.estatus }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-muted mb-0">DIRECCIÓN / CORREO</label>
+                            <div class="border border-dark p-2 fw-bold bg-light text-uppercase text-truncate">
+                                {{ cliente.direccion or 'SIN DIRECCIÓN' }} | <span class="text-lowercase text-primary">{{ cliente.correo or 'sin@correo' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-muted mb-0">TEL. ADD 2</label>
+                            <input type="text" name="telefono_2" class="form-control border-dark border-1 p-2 text-center fw-bold bg-white" value="{{ cliente.telefono_2 or '' }}" placeholder="Añadir...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-muted mb-0">TEL. ADD 3</label>
+                            <input type="text" name="telefono_3" class="form-control border-dark border-1 p-2 text-center fw-bold bg-white" value="{{ cliente.telefono_3 or '' }}" placeholder="Añadir...">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="row h-100 align-items-center">
+                                <div class="col-3">
+                                    <label class="form-label small fw-bold text-muted mb-0 text-center d-block">SALDO TOTAL</label>
+                                    <div class="border border-dark p-3 fw-bold bg-light text-center text-danger fs-5">MXN ${{ "{:,.2f}".format(cliente.saldo_total) }}</div>
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label small fw-bold text-muted mb-0 text-center d-block">PAGO VENCIDO</label>
+                                    <div class="border border-dark p-3 fw-bold bg-light text-center text-danger fs-5">MXN ${{ "{:,.2f}".format(cliente.pago_vencido) }}</div>
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label small fw-bold text-muted mb-0 text-center d-block">PAGO MÍNIMO</label>
+                                    <div class="border border-dark p-3 fw-bold bg-light text-center fs-5">MXN ${{ "{:,.2f}".format(cliente.pago_minimo) }}</div>
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label small fw-bold text-muted mb-0 text-center d-block">DÍAS MORA</label>
+                                    <div class="border border-dark p-3 fw-bold bg-dark text-white text-center fs-5">{{ cliente.dias_de_mora }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted mb-0">BENEFICIOS / OFERTAS</label>
+                            <div class="border border-dark p-3 bg-light text-muted" style="height: 85px; overflow-y: auto;">
+                                <em>Área designada para mostrar campañas de descuento, quitas u ofertas especiales autorizadas para este cliente.</em>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-dark opacity-50 mb-4">
+
+                    <div class="row mb-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">RESULTADO DE LA LLAMADA</label>
+                            <select name="estatus" class="form-select form-select-lg border-dark border-2 rounded-0 fw-bold" required>
+                                <option value="" selected disabled>Seleccione...</option>
+                                <option value="Promesa de Pago">Promesa de Pago</option>
+                                <option value="Realizó Pago">Realizó Pago</option>
+                                <option value="No Contesta">No Contesta</option>
+                                <option value="Buzón de Voz">Buzón de Voz</option>
+                                <option value="Mensaje con Tercero">Mensaje con Tercero</option>
+                                <option value="Ilocalizable">Ilocalizable</option>
+                                <option value="Negativa">Negativa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">FECHA PROMESA</label>
+                            <input type="date" name="fecha_promesa" class="form-control form-control-lg border-dark border-2 rounded-0">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">MONTO PROMESA</label>
+                            <input type="number" step="0.01" name="monto_promesa" class="form-control form-control-lg border-dark border-2 rounded-0 text-center fw-bold" placeholder="$0.00">
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-10">
+                            <label class="form-label fw-bold">DETALLE DE LA NEGOCIACIÓN</label>
+                            <textarea name="comentario" class="form-control border-dark border-2 rounded-0" rows="3" placeholder="Redacta la gestión de forma clara y profesional..." required></textarea>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-dark btn-lg w-100 fw-bold border-2 shadow-sm rounded-0">AGREGAR</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="mt-5 border border-dark border-3 bg-white shadow-sm rounded-1">
+                    <table class="table table-bordered table-striped mb-0 align-middle">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 15%;">FECHA HORA</th>
+                                <th style="width: 45%;">GESTIÓN</th>
+                                <th style="width: 20%;">ESTATUS</th>
+                                <th style="width: 20%;">ASESOR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for g in historial %}
+                            <tr>
+                                <td class="text-center small fw-bold">{{ g.fecha_local.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>{{ g.comentario }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary text-uppercase">{{ g.resultado }}</span>
+                                    {% if g.monto_promesa %}
+                                    <br><span class="fw-bold text-success mt-1 d-block">MXN ${{ "{:,.2f}".format(g.monto_promesa) }} el {{ g.fecha_promesa.strftime('%d/%m/%Y') }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center text-uppercase fw-bold text-primary">{{ g.usuario.nombre }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3 fw-bold">Sin historial registrado. Sé el primero en gestionar esta cuenta.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div> <div class="tab-pane fade" id="script" role="tabpanel">
+                <div class="d-flex flex-column justify-content-center align-items-center bg-light border border-dark border-2 p-5" style="min-height: 450px;">
+                    <h1 class="fw-bold mb-5 display-4 text-dark text-decoration-underline" style="letter-spacing: 2px;">SCRIPT DE COBRANZA</h1>
+                    <div class="w-75 text-center">
+                        <p class="fs-2 lh-base text-dark">
+                            "Buen día, me comunico con <strong class="text-primary text-uppercase">{{ cliente.nombre }}</strong>. <br><br>
+                            El motivo de mi llamada es por su cuenta terminación <strong>{{ cliente.numero_cuenta[-4:] }}</strong>. Presenta un pago vencido de <strong class="text-danger">MXN ${{ "{:,.2f}".format(cliente.pago_vencido) }}</strong> con un atraso de <strong>{{ cliente.dias_de_mora }} días</strong>. <br><br>
+                            ¿Cuál es el motivo de su atraso y cómo podemos regularizarlo el día de hoy?"
+                        </p>
+                    </div>
+                </div>
+            </div> </div> </div> </div>
+
+<script>
+    // Temporizador Psicológico
+    let segundos = 0;
+    const display = document.getElementById('cronometro-box');
+    const timerSpan = document.getElementById('timer');
+    
+    const intervaloTimer = setInterval(() => {
+        segundos++;
+        let m = Math.floor(segundos / 60);
+        let s = segundos % 60;
+        timerSpan.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+        
+        if (segundos === 300) { // Alarma a los 5 minutos
+            display.classList.remove('bg-white', 'text-dark');
+            display.classList.add('bg-danger', 'text-white');
+            display.style.animation = "pulse 1s infinite";
+        }
+    }, 1000);
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+</style>
+{% endblock %}

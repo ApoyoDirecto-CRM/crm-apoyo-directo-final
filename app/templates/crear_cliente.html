@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow border-0 col-md-8 mx-auto">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i> Registrar Nuevo Cliente</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('main.crear_cliente') }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold">Número de Cuenta</label>
+                        <input type="text" name="numero_cuenta" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold">Nombre Completo</label>
+                        <input type="text" name="nombre" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold">Correo Electrónico</label>
+                        <input type="email" name="correo" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="fw-bold">Dirección</label>
+                    <textarea name="direccion" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="fw-bold">Producto / Campaña</label>
+                        <input type="text" name="producto" class="form-control" placeholder="Ej. Crédito Personal, Tarjeta Platinum...">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="fw-bold">Saldo Total</label>
+                        <input type="number" step="0.01" name="saldo_total" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="fw-bold">Pago Mínimo Sugerido</label>
+                        <input type="number" step="0.01" name="pago_minimo" class="form-control" required>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label class="fw-bold text-primary">Asignar a Asesor</label>
+                        <select name="asesor_id" class="form-select" required>
+                            <option value="" disabled selected>Seleccione un asesor...</option>
+                            {% for a in asesores %}
+                                <option value="{{ a.id }}">{{ a.nombre }} ({{ a.usuario }})</option>
+                            {% else %}
+                                <option value="" disabled>No hay asesores registrados</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <hr>
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Guardar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
