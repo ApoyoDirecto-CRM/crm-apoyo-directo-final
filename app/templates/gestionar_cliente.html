@@ -185,9 +185,9 @@
                     <h1 class="fw-bold mb-5 display-4 text-dark text-decoration-underline" style="letter-spacing: 2px;">SCRIPT DE COBRANZA</h1>
                     <div class="w-75 text-center">
                         <p class="fs-2 lh-base text-dark">
-                            "Buen día, me comunico con <strong class="text-primary text-uppercase">{{ cliente.nombre }}</strong>. <br><br>
-                            El motivo de mi llamada es por su cuenta terminación <strong>{{ cliente.numero_cuenta[-4:] }}</strong>. Presenta un pago vencido de <strong class="text-danger">MXN ${{ "{:,.2f}".format(cliente.pago_vencido) }}</strong> con un atraso de <strong>{{ cliente.dias_de_mora }} días</strong>. <br><br>
-                            ¿Cuál es el motivo de su atraso y cómo podemos regularizarlo el día de hoy?"
+                            "Buen día, me comunico con el señor/señora <strong class="text-primary text-uppercase">{{ cliente.nombre }}</strong>. <br><br>
+                            Un gusto mi nombre es (TU NOMBRE) El motivo de mi llamada es por su cuenta terminación <strong>{{ cliente.numero_cuenta[-4:] }}</strong>. Que presenta un atraso de <strong class="text-danger">MXN ${{ "{:,.2f}".format(cliente.pago_vencido) }}</strong> con un total de <strong>{{ cliente.dias_de_mora }} días de atraso</strong>. <br><br>
+                            ¿Cuál es el motivo de su atraso y cómo podemos ayudarle a regularizarlo el día de hoy?"
                         </p>
                     </div>
                 </div>

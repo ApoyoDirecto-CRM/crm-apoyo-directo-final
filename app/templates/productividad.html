@@ -1,39 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container-fluid mt-4">
+
+<div class="mb-4">
+    <a href="{{ url_for('main.dashboard') }}" class="btn fw-bold text-white shadow" style="background-color: #6f42c1; border: 1px solid #bc8f8f;">
+        <i class="fas fa-arrow-left me-2"></i> VOLVER AL PANEL DE CONTROL
+    </a>
+</div>
+
+<div class="card card-contenedor p-4 shadow-lg border-0">
     
-    <ul class="nav nav-pills mb-4 border-bottom border-dark pb-3">
+    <ul class="nav nav-tabs mb-4" style="border-bottom: 2px solid #343a40;">
         <li class="nav-item">
-            <a class="nav-link active bg-dark text-white fw-bold border border-dark me-2" href="{{ url_for('main.productividad') }}"><i class="fas fa-chart-bar me-2"></i>Métricas de Productividad</a>
+            <a class="nav-link active bg-dark text-white fw-bold border-dark" href="{{ url_for('main.productividad') }}" style="border-radius: 5px 5px 0 0;">
+                <i class="fas fa-chart-bar me-2"></i>Métricas de Productividad
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark fw-bold border border-dark" href="{{ url_for('main.visor_cartera') }}"><i class="fas fa-globe me-2"></i>Visor Global de Cartera</a>
+            <a class="nav-link text-dark fw-bold border-0" href="{{ url_for('main.visor_cartera') }}">
+                <i class="fas fa-globe me-2 text-muted"></i>Visor Global de Cartera
+            </a>
         </li>
     </ul>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3><i class="fas fa-user-clock me-2"></i>Productividad Diaria <span class="badge bg-danger fs-6 heartbeat-badge"><i class="fas fa-satellite-dish me-1"></i> Radar en Vivo</span></h3>
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-dark fw-bold border-2">Regresar al Panel</a>
+    <div class="d-flex align-items-center mb-4 pb-2 border-bottom border-2">
+        <h3 class="text-dark fw-bold mb-0">
+            <i class="fas fa-user-clock me-2 text-primary"></i>Productividad Diaria 
+        </h3>
+        <span class="badge bg-danger fs-6 heartbeat-badge ms-3 shadow-sm">
+            <i class="fas fa-satellite-dish me-1"></i> Radar en Vivo
+        </span>
     </div>
 
     <div class="card shadow-sm border-dark border-2 mb-5">
         <div class="card-header bg-dark text-white fw-bold">
-            <i class="fas fa-stopwatch me-2"></i> TIEMPO EN LÍNEA (SESIÓN ACTUAL)
+            <i class="fas fa-stopwatch me-2 text-warning"></i> TIEMPO EN LÍNEA (SESIÓN ACTUAL)
         </div>
         <div class="card-body p-0">
             <table class="table table-hover mb-0 align-middle text-center">
                 <thead class="table-light">
                     <tr>
-                        <th>ASESOR</th>
-                        <th>HORA DE ENTRADA</th>
-                        <th>TIEMPO TRANSCURRIDO</th>
+                        <th class="text-dark fw-bold">ASESOR</th>
+                        <th class="text-dark fw-bold">HORA DE ENTRADA</th>
+                        <th class="text-dark fw-bold">TIEMPO TRANSCURRIDO</th>
                     </tr>
                 </thead>
                 <tbody id="contenedor-relojes">
                     {% for a in asesores_reales %}
                     <tr>
-                        <td class="fw-bold text-uppercase">{{ a.nombre }}</td>
-                        <td class="text-muted fw-bold text-primary">{{ a.login_cdmx.strftime('%H:%M:%S') if a.login_cdmx else 'N/A' }}</td>
+                        <td class="fw-bold text-uppercase text-dark">{{ a.nombre }}</td>
+                        <td class="text-muted fw-bold">{{ a.login_cdmx.strftime('%H:%M:%S') if a.login_cdmx else 'N/A' }}</td>
                         <td class="fw-bold fs-5 cronometro-metrica {% if a.is_online %}text-primary{% else %}text-secondary{% endif %}" 
                             data-login="{{ a.ultimo_login.isoformat() if a.ultimo_login else '' }}"
                             data-actividad="{{ a.ultima_actividad.isoformat() if a.ultima_actividad else '' }}"
@@ -62,7 +77,7 @@
                     <tbody>
                         {% for hora, datos_asesores in reporte.items() %}
                         <tr>
-                            <td class="text-center fw-bold bg-light fs-5">{{ hora }}</td>
+                            <td class="text-center fw-bold bg-light fs-5 text-dark">{{ hora }}</td>
                             
                             {% for asesor in asesores %}
                             <td class="p-3">
@@ -71,7 +86,7 @@
                                         {% for resultado, cantidad in datos_asesores[asesor]['resultados'].items() %}
                                             <div class="d-flex justify-content-between mb-1 border-bottom border-light pb-1">
                                                 <span class="text-muted fw-bold">{{ resultado }}</span>
-                                                <span class="badge {% if resultado == 'Promesa de Pago' %}bg-success{% elif resultado == 'Realizó Pago' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                <span class="badge {% if resultado == 'Promesa de Pago' %}bg-success{% elif resultado == 'Realizó Pago' %}bg-primary{% else %}bg-secondary{% endif %} shadow-sm">
                                                     {{ cantidad }}
                                                 </span>
                                             </div>
@@ -121,6 +136,7 @@
             </div>
         </div>
     </div>
+    
 </div>
 
 <style>
@@ -137,7 +153,6 @@
 <script>
     let relojInterval;
 
-    // 1. Lógica matemática de los cronómetros
     function actualizarCronometros() {
         const ahora = new Date();
         document.querySelectorAll('.cronometro-metrica').forEach(celda => {
@@ -170,45 +185,36 @@
         });
     }
 
-    // 2. Encendido seguro de relojes (Evita que se multipliquen)
     function iniciarRelojes() {
         if (relojInterval) clearInterval(relojInterval);
         actualizarCronometros();
         relojInterval = setInterval(actualizarCronometros, 1000);
     }
 
-    // 3. El Escáner de la Sombra (Shadow Fetching)
     function escanearTableroEnVivo() {
-        // Pide al servidor la página actual en silencio
         fetch(window.location.href)
             .then(response => response.text())
             .then(html => {
-                // Parsea el código como si fuera un documento oculto
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, "text/html");
 
-                // Extrae SOLO los datos de los relojes y reemplaza la tabla
                 const nuevosRelojes = doc.getElementById('contenedor-relojes');
                 if (nuevosRelojes) {
                     document.getElementById('contenedor-relojes').innerHTML = nuevosRelojes.innerHTML;
                 }
 
-                // Extrae SOLO los datos de productividad (Dinero/Llamadas) y reemplaza la tabla
                 const nuevoReporte = doc.getElementById('contenedor-reporte');
                 if (nuevoReporte) {
                     document.getElementById('contenedor-reporte').innerHTML = nuevoReporte.innerHTML;
                 }
 
-                // Reinicia los cronómetros para que sigan corriendo en la nueva tabla inyectada
                 iniciarRelojes();
             })
             .catch(error => console.error("Error en el Radar:", error));
     }
 
-    // Arranque Inicial
     document.addEventListener("DOMContentLoaded", function() {
         iniciarRelojes();
-        // Ejecuta el escáner cada 10 segundos
         setInterval(escanearTableroEnVivo, 10000);
     });
 </script>

@@ -99,7 +99,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Motor del Radar Invisible
-        { % if u.rol in ['GERENTE', 'SUPERVISOR'] %}
+        {% if u.rol in ['GERENTE', 'SUPERVISOR'] %}
         function escanearAsesores() {
             fetch("{{ url_for('main.api_estado_asesores') }}")
                 .then(response => response.json())
