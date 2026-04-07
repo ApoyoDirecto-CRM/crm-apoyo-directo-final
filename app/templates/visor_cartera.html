@@ -1,16 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container-fluid mt-4">
-    <ul class="nav nav-pills mb-4 border-bottom border-dark pb-3">
+
+<div class="mb-4">
+    <a href="{{ url_for('main.dashboard') }}" class="btn fw-bold text-white shadow" style="background-color: #6f42c1; border: 1px solid #bc8f8f;">
+        <i class="fas fa-arrow-left me-2"></i> VOLVER AL PANEL DE CONTROL
+    </a>
+</div>
+
+<div class="card card-contenedor p-4 shadow-lg border-0">
+    
+    <ul class="nav nav-tabs mb-4" style="border-bottom: 2px solid #343a40;">
         <li class="nav-item">
-            <a class="nav-link text-dark fw-bold border border-dark me-2" href="{{ url_for('main.productividad') }}"><i class="fas fa-chart-bar me-2"></i>Métricas de Productividad</a>
+            <a class="nav-link text-dark fw-bold border-0" href="{{ url_for('main.productividad') }}">
+                <i class="fas fa-chart-bar me-2 text-muted"></i>Métricas de Productividad
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active bg-dark text-white fw-bold border border-dark" href="{{ url_for('main.visor_cartera') }}"><i class="fas fa-globe me-2"></i>Visor Global de Cartera</a>
+            <a class="nav-link active bg-dark text-white fw-bold border-dark" href="{{ url_for('main.visor_cartera') }}" style="border-radius: 5px 5px 0 0;">
+                <i class="fas fa-globe me-2"></i>Visor Global de Cartera
+            </a>
         </li>
     </ul>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-globe me-2"></i>Visor Global de Cartera</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-2">
+        <h3 class="text-dark fw-bold mb-0">
+            <i class="fas fa-globe me-2 text-primary"></i> Visor Global de Cartera
+        </h3>
         
         <div class="btn-group shadow-sm" role="group">
             <a href="{{ url_for('main.visor_cartera', filtro='todas') }}" class="btn {% if filtro_actual == 'todas' %}btn-dark{% else %}btn-outline-dark{% endif %} fw-bold border-2">TODA LA CARTERA</a>
@@ -57,5 +72,7 @@
             </div>
         </div>
     </div>
+    
 </div>
+
 {% endblock %}
