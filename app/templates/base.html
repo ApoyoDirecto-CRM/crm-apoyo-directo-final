@@ -9,117 +9,76 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ADN Visual Apoyo Directo */
-        :root {
-            --purpura-principal: #6f42c1;
-            --purpura-oscuro: #4b0082;
-            --rosado-corporativo: #bc8f8f;
+        /* FONDO CORPORATIVO GLOBAL (Igual a tu imagen de referencia) */
+        body {
+            background: radial-gradient(circle at bottom, #8a2be2 0%, #2a0845 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .bg-gradient-corporativo {
-            background: linear-gradient(135deg, var(--purpura-oscuro) 0%, var(--purpura-principal) 100%) !important;
-            color: white !important;
-        }
-
-        .table-thead-corporativo {
-            background: linear-gradient(90deg, var(--purpura-oscuro) 0%, var(--purpura-principal) 100%);
-            color: white;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .btn-corporativo {
-            background-color: var(--purpura-principal);
-            color: white;
-            border: 2px solid var(--rosado-corporativo);
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .btn-corporativo:hover {
-            background-color: var(--purpura-oscuro);
-            color: #ffc107;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
+        /* Barra superior negra sólida */
         .navbar-custom {
-            background-color: #212529;
-            border-bottom: 4px solid var(--purpura-principal);
+            background-color: #111 !important;
+            border-bottom: 3px solid #6f42c1;
+        }
+
+        /* Estilo para las tarjetas de contenido */
+        .card-contenedor {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .letter-spacing-1 { letter-spacing: 1px; }
-        .letter-spacing-2 { letter-spacing: 2px; }
-
-        /* Estilo para las alertas */
-        .alert-border { border: 2px solid var(--purpura-principal); }
     </style>
 </head>
 
-<body class="bg-light">
+<body>
 
     {% if session.get('usuario_id') %}
-    <nav class="navbar navbar-dark navbar-custom shadow">
+    <nav class="navbar navbar-dark navbar-custom shadow-sm py-2">
         <div class="container-fluid px-4">
-            
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo" height="45" class="me-2 shadow-sm rounded">
-                <span class="fw-bold letter-spacing-1">CRM APOYO DIRECTO</span>
+                <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo" height="45" class="me-3 rounded shadow-sm">
+                <span class="fw-bold d-none d-md-inline">CRM APOYO DIRECTO</span>
             </a>
             
-            <span class="navbar-text text-white fw-bold mx-auto text-uppercase letter-spacing-2 d-none d-md-inline">
-                {% if u %}<i class="fas fa-user-circle me-1"></i> {{ u.nombre }} <span class="badge bg-primary ms-1">{{ u.rol }}</span>{% endif %}
+            <span class="navbar-text text-white fw-bold mx-auto text-uppercase letter-spacing-1">
+                {% if u %}SESIÓN DE {{ u.nombre }} ({{ u.rol }}){% endif %}
             </span>
             
-            <div class="d-flex align-items-center">
-                <div class="text-warning fw-bold fs-5 me-4 letter-spacing-2" style="font-family: 'Courier New', Courier, monospace;">
-                    <i class="fas fa-clock"></i> <span id="reloj-global">00:00:00</span>
-                </div>
-                <a href="{{ url_for('main.logout') }}" class="btn btn-danger fw-bold border-2 shadow-sm btn-sm">SALIR</a>
+            <div class="text-warning fw-bold fs-5" style="font-family: monospace;">
+                <i class="fas fa-clock"></i> <span id="reloj-global">00:00:00</span>
             </div>
-            
         </div>
     </nav>
     {% endif %}
 
     <div class="container mt-4">
-        
-        {% if u and u.rol in ['GERENTE', 'SUPERVISION'] %}
-        <div class="mb-4">
-            <a href="{{ url_for('main.dashboard') }}" class="btn btn-corporativo shadow-sm px-4">
-                <i class="fas fa-th-large me-2"></i> VOLVER AL PANEL DE CONTROL
-            </a>
-        </div>
-        {% endif %}
-
-        <div class="position-relative" style="z-index: 1050;">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show shadow-sm fw-bold alert-border" role="alert">
-                            <i class="fas fa-info-circle me-2"></i> {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show shadow-sm border-2 mb-4" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         {% block content %}{% endblock %}
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // Reloj en tiempo real
         setInterval(() => {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('es-MX', { hour12: false });
             const reloj = document.getElementById('reloj-global');
-            if(reloj) reloj.innerText = timeString;
+            if(reloj) reloj.innerText = now.toLocaleTimeString('es-MX', { hour12: false });
         }, 1000);
     </script>
-
 </body>
 </html>

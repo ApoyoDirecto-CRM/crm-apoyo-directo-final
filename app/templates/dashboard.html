@@ -1,129 +1,105 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="bg-dark text-white d-flex justify-content-between align-items-center px-4 py-3 mb-4 shadow">
-    <div class="d-flex align-items-center">
-        <i class="fas fa-network-wired fs-3 text-light me-3" style="color: #b08ee6 !important;"></i>
-        <h4 class="mb-0 fw-bold fst-italic text-light" style="font-family: 'Arial', sans-serif;">Panel Central</h4>
-    </div>
+<div class="card card-contenedor p-4 shadow-lg border-0">
     
-    <div class="text-center flex-grow-1">
-        <h5 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 1px;">SESIÓN DE {{ u.nombre }} ({{ u.rol }})</h5>
-    </div>
-    
-    <div class="d-flex align-items-center gap-3">
-        <h4 class="text-warning mb-0 fw-bold me-3" style="letter-spacing: 2px;">
-            <i class="far fa-clock me-2 text-warning"></i><span id="reloj-vivo">00:00:00</span>
+    <div class="card-header bg-dark text-white rounded-3 mb-4 d-flex justify-content-between align-items-center p-3">
+        <h4 class="mb-0 fw-bold fst-italic" style="font-family: 'Arial', sans-serif;">
+            <i class="fas fa-network-wired me-2" style="color: #b08ee6;"></i> Panel Central
         </h4>
-        
+        <span class="badge bg-success px-3 py-2 fs-6">ESTADO: ACTIVO</span>
+    </div>
+
+    <div class="container-fluid px-2 pb-2">
+
         {% if u.rol in ['ASESOR', 'SUPERVISOR'] %}
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-light px-3 py-1">Dashboard</a>
-        <a href="{{ url_for('main.logout') }}" class="btn btn-danger px-3 py-1 fw-bold">Cerrar Sesión</a>
-        {% endif %}
-    </div>
-</div>
-
-<div class="container-fluid px-4 pb-5">
-
-    {% if u.rol in ['ASESOR', 'SUPERVISOR'] %}
-    <div class="row mb-5">
-        <div class="col-12 d-flex justify-content-end gap-2">
-            <a href="{{ url_for('main.siguiente_cliente') }}" class="btn btn-light bg-white border-dark fw-bold px-4 shadow-sm text-dark">PERSONAL</a>
-            <a href="{{ url_for('main.siguiente_cliente_grupal') }}" class="btn btn-light bg-white border-dark fw-bold px-4 shadow-sm text-dark">GRUPAL</a>
-            
-            {% if u.rol == 'SUPERVISOR' %}
-            <a href="{{ url_for('main.carga_masiva') }}" class="btn btn-primary text-white fw-bold px-4 shadow-sm"><i class="fas fa-upload me-1"></i> Carga Masiva</a>
-            <a href="{{ url_for('main.productividad') }}" class="btn btn-dark fw-bold px-4 shadow-sm"><i class="fas fa-chart-line me-1"></i> Métricas y Cartera</a>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="row justify-content-center {% if u.rol == 'ASESOR' %}mt-5{% endif %}">
-        
-        {% if u.rol in ['GERENTE', 'SUPERVISOR'] %}
-        <div class="col-md-4">
-            <div class="border border-dark border-3 bg-white shadow-sm h-100" style="min-height: 250px;">
-                <div class="bg-dark text-white text-center p-2 border-bottom border-dark border-2">
-                    <h6 class="mb-0 fw-bold" style="letter-spacing: 1px;">ASESORES CONECTADOS</h6>
-                </div>
-                <table class="table table-bordered mb-0 align-middle text-center">
-                    <thead class="table-light border-dark border-bottom-2">
-                        <tr>
-                            <th class="fw-bold text-dark">ASESOR</th>
-                            <th class="fw-bold text-dark border-start border-dark border-3">ESTADO ACTUAL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for c in conectados %}
-                        <tr>
-                            <td class="fw-bold text-uppercase">{{ c.usuario }}</td>
-                            <td class="border-start border-dark border-3">
-                                <span id="badge-{{ c.usuario }}" class="badge bg-{{ c.status_color }} px-4 py-2 fw-bold" style="border-radius: 20px; min-width: 110px;">
-                                    <i class="fas fa-circle me-1" style="font-size: 0.6rem;"></i> 
-                                    <span class="status-texto">{{ c.status_label }}</span>
-                                </span>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="2" class="text-muted py-4">No hay asesores registrados.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="col-md-5">
-            <div class="h-100 d-flex flex-column justify-content-center px-4">
-                <h5 class="text-center text-muted fw-bold mb-4" style="letter-spacing: 1px;">LOCALIZADOR DE CUENTAS</h5>
-                <form method="POST">
-                    <input type="text" name="busqueda_cuenta" class="form-control form-control-lg border-dark border-1 mb-3 text-center fw-bold shadow-sm" placeholder="CUENTA">
-                    <input type="text" name="busqueda_nombre" class="form-control form-control-lg border-dark border-1 mb-3 text-center fw-bold shadow-sm" placeholder="NOMBRE">
-                    <input type="text" name="busqueda_telefono" class="form-control form-control-lg border-dark border-1 mb-4 text-center fw-bold shadow-sm" placeholder="NÚMERO DE TELÉFONO">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-dark btn-lg fw-bold px-5 border-2 shadow" style="border-radius: 5px;">BUSCAR</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        {% if u.rol == 'GERENTE' %}
-        <div class="col-md-3">
-            <div class="d-flex flex-column gap-3">
-                <a href="{{ url_for('main.administrar_usuarios') }}" class="btn btn-success btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-users-cog me-2"></i> Gestionar Usuarios</a>
-                <a href="{{ url_for('main.carga_masiva') }}" class="btn btn-primary btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-upload me-2"></i> Carga Masiva</a>
-                <a href="{{ url_for('main.productividad') }}" class="btn btn-dark btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-chart-line me-2"></i> Métricas y Cartera</a>
-                <a href="{{ url_for('main.descargar_reporte') }}" class="btn btn-info text-white btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-file-excel me-2"></i> Descargar Reporte</a>
+        <div class="row mb-5">
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <a href="{{ url_for('main.siguiente_cliente') }}" class="btn btn-light bg-white border-dark fw-bold px-4 shadow-sm text-dark">PERSONAL</a>
+                <a href="{{ url_for('main.siguiente_cliente_grupal') }}" class="btn btn-light bg-white border-dark fw-bold px-4 shadow-sm text-dark">GRUPAL</a>
                 
-                <a href="{{ url_for('main.logout') }}" class="btn btn-danger btn-lg fw-bold shadow-sm text-center mt-3" style="border-radius: 5px;">Cerrar Sesión</a>
+                {% if u.rol == 'SUPERVISOR' %}
+                <a href="{{ url_for('main.carga_masiva') }}" class="btn btn-primary text-white fw-bold px-4 shadow-sm"><i class="fas fa-upload me-1"></i> Carga Masiva</a>
+                <a href="{{ url_for('main.productividad') }}" class="btn btn-dark fw-bold px-4 shadow-sm"><i class="fas fa-chart-line me-1"></i> Métricas y Cartera</a>
+                {% endif %}
             </div>
         </div>
         {% endif %}
 
+        <div class="row justify-content-center {% if u.rol == 'ASESOR' %}mt-5{% endif %}">
+            
+            {% if u.rol in ['GERENTE', 'SUPERVISOR'] %}
+            <div class="col-md-4">
+                <div class="border border-dark border-2 rounded bg-white shadow-sm h-100 overflow-hidden" style="min-height: 250px;">
+                    <div class="bg-dark text-white text-center p-2 border-bottom border-dark border-2">
+                        <h6 class="mb-0 fw-bold" style="letter-spacing: 1px;">ASESORES CONECTADOS</h6>
+                    </div>
+                    <table class="table table-bordered mb-0 align-middle text-center">
+                        <thead class="table-light border-dark border-bottom-2">
+                            <tr>
+                                <th class="fw-bold text-dark">ASESOR</th>
+                                <th class="fw-bold text-dark border-start border-dark border-3">ESTADO ACTUAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in conectados %}
+                            <tr>
+                                <td class="fw-bold text-uppercase">{{ c.usuario }}</td>
+                                <td class="border-start border-dark border-3">
+                                    <span id="badge-{{ c.usuario }}" class="badge bg-{{ c.status_color }} px-4 py-2 fw-bold" style="border-radius: 20px; min-width: 110px;">
+                                        <i class="fas fa-circle me-1" style="font-size: 0.6rem;"></i> 
+                                        <span class="status-texto">{{ c.status_label }}</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="2" class="text-muted py-4">No hay asesores registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="col-md-5">
+                <div class="h-100 d-flex flex-column justify-content-center px-4">
+                    <h5 class="text-center text-muted fw-bold mb-4" style="letter-spacing: 1px;">LOCALIZADOR DE CUENTAS</h5>
+                    <form method="POST">
+                        <input type="text" name="busqueda_cuenta" class="form-control form-control-lg border-dark border-1 mb-3 text-center fw-bold shadow-sm" placeholder="CUENTA">
+                        <input type="text" name="busqueda_nombre" class="form-control form-control-lg border-dark border-1 mb-3 text-center fw-bold shadow-sm" placeholder="NOMBRE">
+                        <input type="text" name="busqueda_telefono" class="form-control form-control-lg border-dark border-1 mb-4 text-center fw-bold shadow-sm" placeholder="NÚMERO DE TELÉFONO">
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-dark btn-lg fw-bold px-5 border-2 shadow" style="border-radius: 5px;">BUSCAR</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if u.rol == 'GERENTE' %}
+            <div class="col-md-3">
+                <div class="d-flex flex-column gap-3">
+                    <a href="{{ url_for('main.administrar_usuarios') }}" class="btn btn-success btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-users-cog me-2"></i> Gestionar Usuarios</a>
+                    <a href="{{ url_for('main.carga_masiva') }}" class="btn btn-primary btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-upload me-2"></i> Carga Masiva</a>
+                    <a href="{{ url_for('main.productividad') }}" class="btn btn-dark btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-chart-line me-2"></i> Métricas y Cartera</a>
+                    <a href="{{ url_for('main.descargar_reporte') }}" class="btn btn-info text-white btn-lg fw-bold shadow-sm text-start" style="border-radius: 5px;"><i class="fas fa-file-excel me-2"></i> Descargar Reporte</a>
+                    
+                    <a href="{{ url_for('main.logout') }}" class="btn btn-danger btn-lg fw-bold shadow-sm text-center mt-3" style="border-radius: 5px;">
+                        <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // 1. Motor del Reloj Superior
-        function actualizarRelojTop() {
-            const ahora = new Date();
-            const horas = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            const segundos = String(ahora.getSeconds()).padStart(2, '0');
-            const spanReloj = document.getElementById('reloj-vivo');
-            if (spanReloj) {
-                spanReloj.innerText = `${horas}:${minutos}:${segundos}`;
-            }
-        }
-        setInterval(actualizarRelojTop, 1000);
-        actualizarRelojTop();
-
-        // 2. Motor del Radar Invisible (Solo si el rol es Mando y existe la tabla)
-        {% if u.rol in ['GERENTE', 'SUPERVISOR'] %}
+        // Motor del Radar Invisible
+        { % if u.rol in ['GERENTE', 'SUPERVISOR'] %}
         function escanearAsesores() {
             fetch("{{ url_for('main.api_estado_asesores') }}")
                 .then(response => response.json())
@@ -143,5 +119,4 @@
         {% endif %}
     });
 </script>
-
 {% endblock %}

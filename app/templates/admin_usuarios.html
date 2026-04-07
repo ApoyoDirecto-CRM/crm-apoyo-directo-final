@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-users-cog me-2"></i>Administración de Usuarios</h2>
-        <a href="{{ url_for('main.crear_asesor') }}" class="btn btn-success fw-bold border-2 shadow-sm"><i class="fas fa-plus me-2"></i>NUEVO USUARIO</a>
+
+<div class="mb-4">
+    <a href="{{ url_for('main.dashboard') }}" class="btn fw-bold text-white shadow" style="background-color: #6f42c1; border: 1px solid #bc8f8f;">
+        <i class="fas fa-arrow-left me-2"></i> VOLVER AL PANEL DE CONTROL
+    </a>
+</div>
+
+<div class="card card-contenedor p-4 shadow-lg border-0">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-2 pb-3">
+        <h2 class="text-dark fw-bold mb-0"><i class="fas fa-users-cog me-2"></i>Administración de Usuarios</h2>
+        <a href="{{ url_for('main.crear_asesor') }}" class="btn btn-success fw-bold border-2 shadow-sm">
+            <i class="fas fa-plus me-2"></i>NUEVO USUARIO
+        </a>
     </div>
 
     <div class="card shadow-sm border-dark border-2">
-        <div class="card-body p-0">
+        <div class="card-body p-0 table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
