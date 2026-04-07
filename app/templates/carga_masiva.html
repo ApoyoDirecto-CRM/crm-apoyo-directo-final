@@ -1,31 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow mx-auto" style="max-width: 600px;">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="fas fa-file-excel me-2"></i> Importación Masiva de Cartera</h5>
-        </div>
-        <div class="card-body p-4">
-            <p class="text-muted small">
-                Suba el archivo <strong>clientes_prueba.xlsx</strong>. 
-                Asegúrese de que la columna <code>asesor_usuario</code> coincida con los nombres de login.
-            </p>
+
+<div class="mb-4">
+    <a href="{{ url_for('main.dashboard') }}" class="btn fw-bold text-white shadow" style="background-color: #6f42c1; border: 1px solid #bc8f8f;">
+        <i class="fas fa-arrow-left me-2"></i> VOLVER AL PANEL DE CONTROL
+    </a>
+</div>
+
+<div class="card card-contenedor p-4 shadow-lg border-0 mx-auto" style="max-width: 700px;">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-2 pb-3">
+        <h3 class="text-dark fw-bold mb-0">
+            <i class="fas fa-file-excel me-2 text-success"></i> Importación Masiva de Cartera
+        </h3>
+    </div>
+
+    <div class="card-body p-0 mt-2">
+        <p class="text-muted fw-bold mb-4" style="font-size: 1.05rem;">
+            <i class="fas fa-info-circle me-1 text-primary"></i> Suba el archivo <strong>clientes_prueba.xlsx</strong>. 
+            Asegúrese de que la columna <code>asesor_usuario</code> coincida con los nombres de login de sus asesores.
+        </p>
+        
+        <form id="formCarga" method="POST" enctype="multipart/form-data">
             
-            <form id="formCarga" method="POST" enctype="multipart/form-data">
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Seleccionar Archivo Excel</label>
-                    <input type="file" name="archivo_excel" class="form-control" accept=".xlsx, .xls" required>
-                    <div class="form-text">Solo archivos .xlsx o .xls</div>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" id="btnProcesar" class="btn btn-success">
-                        <i class="fas fa-upload me-1"></i> Procesar e Importar
-                    </button>
-                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">Volver</a>
-                </div>
-            </form> 
+            <div class="mb-4 p-4 rounded bg-light border border-2 text-center shadow-sm" style="border-style: dashed !important; border-color: #bc8f8f !important;">
+                <label class="form-label fw-bold text-dark fs-5 mb-3">Seleccione el Archivo Excel de su Computadora</label>
+                <input type="file" name="archivo_excel" class="form-control form-control-lg border-dark shadow-sm mx-auto" style="max-width: 80%;" accept=".xlsx, .xls" required>
+                <div class="form-text mt-3 text-muted fw-bold"><i class="fas fa-check text-success"></i> Solo se permiten archivos .xlsx o .xls</div>
             </div>
+            
+            <div class="d-grid mt-4">
+                <button type="submit" id="btnProcesar" class="btn btn-dark btn-lg fw-bold shadow border-2">
+                    <i class="fas fa-upload me-2"></i> Procesar e Importar Cartera
+                </button>
+            </div>
+        </form> 
     </div>
 </div>
 
@@ -48,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // 2. Feedback visual y prevención de doble envío
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando datos...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando datos masivos...';
         btn.classList.add('disabled');
     });
 });
