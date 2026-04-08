@@ -47,7 +47,7 @@
                 <tbody id="contenedor-relojes">
                     {% for a in asesores_reales %}
                     <tr>
-                        <td class="fw-bold text-uppercase text-dark">{{ a.nombre }}</td>
+                        <td class="fw-bold text-uppercase text-dark">{{ a.usuario }}</td>
                         <td class="text-muted fw-bold">{{ a.login_cdmx.strftime('%H:%M:%S') if a.login_cdmx else 'N/A' }}</td>
                         <td class="fw-bold fs-5 cronometro-metrica {% if a.is_online %}text-primary{% else %}text-secondary{% endif %}" 
                             data-login="{{ a.ultimo_login.isoformat() if a.ultimo_login else '' }}"

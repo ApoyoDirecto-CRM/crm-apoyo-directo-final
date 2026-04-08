@@ -169,7 +169,7 @@
                                     <br><span class="fw-bold text-success mt-1 d-block">MXN ${{ "{:,.2f}".format(g.monto_promesa) }} el {{ g.fecha_promesa.strftime('%d/%m/%Y') }}</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-center text-uppercase fw-bold text-primary">{{ g.usuario.nombre }}</td>
+                                <td class="text-center text-uppercase fw-bold text-primary">{{ g.usuario.usuario }}</td>
                             </tr>
                             {% else %}
                             <tr>
@@ -194,7 +194,6 @@
             </div> </div> </div> </div>
 
 <script>
-    // Temporizador Psicológico
     let segundos = 0;
     const display = document.getElementById('cronometro-box');
     const timerSpan = document.getElementById('timer');
@@ -205,7 +204,7 @@
         let s = segundos % 60;
         timerSpan.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
         
-        if (segundos === 300) { // Alarma a los 5 minutos
+        if (segundos === 300) {
             display.classList.remove('bg-white', 'text-dark');
             display.classList.add('bg-danger', 'text-white');
             display.style.animation = "pulse 1s infinite";
