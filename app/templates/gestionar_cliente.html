@@ -52,9 +52,16 @@
                             <div class="border border-dark p-2 fw-bold bg-light text-truncate fs-5" title="{{ cliente.nombre }}">{{ cliente.nombre }}</div>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label small fw-bold text-muted mb-0">TELÉFONO 1</label>
-                            <div class="border border-dark p-2 fw-bold bg-light text-center fs-5">{{ cliente.telefono or 'N/A' }}</div>
-                        </div>
+    <label class="form-label small fw-bold text-muted mb-0">TELÉFONO 1</label>
+    <div class="d-flex border border-dark bg-light">
+        <div class="p-2 fw-bold text-center fs-5 flex-grow-1 border-end border-dark">{{ cliente.telefono or 'N/A' }}</div>
+        {% if cliente.telefono %}
+        <button type="button" onclick="iniciarLlamada('{{ cliente.telefono }}')" class="btn btn-success rounded-0 px-3 border-0 d-flex align-items-center justify-content-center" title="Llamar ahora">
+            <i class="fas fa-phone-alt fs-5"></i>
+        </button>
+        {% endif %}
+    </div>
+</div>
                         <div class="col-md-2">
                             <label class="form-label small fw-bold text-muted mb-0">PRODUCTO</label>
                             <div class="border border-dark p-2 fw-bold bg-light text-center text-uppercase">{{ cliente.producto or 'N/A' }}</div>
@@ -219,4 +226,25 @@
         100% { transform: scale(1); }
     }
 </style>
+<script>
+function iniciarLlamada(telefono) {
+    // Alerta visual de sistema
+    alert("☎️ CONECTANDO LÍNEA...\n\nTu MicroSIP sonará en un segundo. Contesta la llamada en tu programa para enlazar al cliente.");
+    
+    // Petición al servidor para activar Zadarma
+    fetch('/llamar/' + telefono)
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                console.log("Centralita activada. Llamando al " + telefono);
+            } else {
+                alert("❌ ERROR DE RED: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Fallo en la petición:', error);
+            alert("❌ ERROR DE SISTEMA: No se pudo contactar con el servidor telefónico.");
+        });
+}
+</script>
 {% endblock %}

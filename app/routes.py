@@ -7,6 +7,12 @@ from sqlalchemy import func, or_, text
 from sqlalchemy.orm import joinedload # <--- HERRAMIENTA CRÍTICA DE RENDIMIENTO
 import pandas as pd
 import io
+import requests
+import hashlib
+import hmac
+import base64
+import urllib.parse
+from flask import jsonify
 
 main = Blueprint('main', __name__)
 
@@ -539,4 +545,46 @@ def api_estado_asesores():
         })
 
     return jsonify(datos)
-            
+
+# --- INTEGRACIÓN ZADARMA (CLICK-TO-CALL) ---
+ZADARMA_KEY = '25cc35a15328fa2f4b9d'
+ZADARMA_SECRET = 'd4404402bd075b2dac13'
+
+@main.route('/llamar/<telefono>')
+def realizar_llamada(telefono):
+    # 1. Filtro Quirúrgico: Limpiamos el número y le agregamos el '52' de México
+    telefono = telefono.replace(" ", "").replace("-", "")
+    if len(telefono) == 10:
+        telefono = "52" + telefono
+        
+    # Parámetros básicos de la llamada (Extensión 100)
+    params = {
+        'from': '100', 
+        'to': telefono
+    }
+    
+    # 2. Preparar los parámetros en orden estricto
+    sorted_params = dict(sorted(params.items()))
+    params_string = urllib.parse.urlencode(sorted_params)
+    
+    # 3. Construir la firma de seguridad (HMAC-SHA1 + Base64)
+    method = '/v1/request/callback/'
+    md5hash = hashlib.md5(params_string.encode('utf8')).hexdigest()
+    data = method + params_string + md5hash
+    
+    hmac_obj = hmac.new(ZADARMA_SECRET.encode('utf8'), data.encode('utf8'), hashlib.sha1)
+    sign = base64.b64encode(hmac_obj.digest()).decode('utf8')
+    
+    headers = {'Authorization': f"{ZADARMA_KEY}:{sign}"}
+    
+    # 4. Disparar la orden al servidor
+    url = f"https://api.zadarma.com{method}?{params_string}"
+    
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return jsonify({"status": "success", "message": "Llamada conectada al " + telefono})
+        else:
+            return jsonify({"status": "error", "message": response.text})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
