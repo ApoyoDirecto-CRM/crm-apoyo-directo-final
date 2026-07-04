@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mb-4">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-light fw-bold">
+        <i class="fas fa-arrow-left me-1"></i> Volver al Panel
+    </a>
+</div>
+
+<div class="card card-contenedor p-4 shadow-lg border-0">
+
+    <ul class="nav nav-tabs mb-4" style="border-bottom: 2px solid #343a40;">
+        <li class="nav-item">
+            <a class="nav-link text-dark fw-bold border-0" href="{{ url_for('main.metricas') }}">
+                <i class="fas fa-chart-bar me-2 text-muted"></i>Métricas de Productividad
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active bg-dark text-white fw-bold border-dark" href="#" style="border-radius: 5px 5px 0 0;">
+                <i class="fas fa-globe me-2"></i>Visor Global de Ventas
+            </a>
+        </li>
+    </ul>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-2 flex-wrap gap-2">
+        <h3 class="text-dark fw-bold mb-0">
+            <i class="fas fa-globe me-2 text-primary"></i> Visor Global de Ventas
+        </h3>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <div class="btn-group shadow-sm" role="group">
+                <a href="{{ url_for('main.visor_ventas', filtro='todas') }}" class="btn {% if filtro_actual == 'todas' %}btn-dark{% else %}btn-outline-dark{% endif %} fw-bold border-2">TODAS</a>
+                <a href="{{ url_for('main.visor_ventas', filtro='hoy') }}" class="btn {% if filtro_actual == 'hoy' %}btn-dark{% else %}btn-outline-dark{% endif %} fw-bold border-2">HOY</a>
+            </div>
+
+            <form method="GET" action="{{ url_for('main.visor_ventas') }}" class="d-flex gap-1">
+                <input type="hidden" name="filtro" value="agente">
+                <select name="asesor_id" class="form-select form-select-sm" style="width: auto;">
+                    <option value="">Todos los agentes</option>
+                    {% for a in agentes %}
+                    <option value="{{ a.id }}" {{ 'selected' if request.args.get('asesor_id')|string == a.id|string }}>{{ a.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm btn-dark fw-bold">Filtrar</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-dark border-2">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 70vh;">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-dark" style="position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Número</th>
+                            <th>IMEI</th>
+                            <th>NI</th>
+                            <th>Método</th>
+                            <th>Vigencia NIP</th>
+                            <th>Tipo Venta</th>
+                            <th>Asesor</th>
+                            <th>Registrada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in ventas %}
+                        <tr>
+                            <td class="fw-bold text-muted">{{ v.id }}</td>
+                            <td>{{ v.fecha_venta.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ v.cliente_nombre }} {{ v.cliente_apellidos }}</td>
+                            <td>{{ v.numero }}</td>
+                            <td><code>{{ v.imei }}</code></td>
+                            <td>{{ v.ni }}</td>
+                            <td>{{ v.metodo_contactacion }}</td>
+                            <td>{{ v.vigencia_nip.strftime('%d/%m/%Y') if v.vigencia_nip else '—' }}</td>
+                            <td><span class="badge bg-primary">{{ v.tipo_venta }}</span></td>
+                            <td class="fw-bold">{{ v.asesor.nombre if v.asesor else '—' }}</td>
+                            <td class="small text-muted">{{ v.created_at.strftime('%d/%m/%Y %H:%M') if v.created_at else '—' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center py-4 text-muted fw-bold">No hay ventas con este filtro.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

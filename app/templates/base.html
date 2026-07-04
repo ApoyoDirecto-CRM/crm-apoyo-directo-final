@@ -3,59 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apoyo Directo - CRM</title>
-    
+    <title>CRM Ventas BAIT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* FONDO CORPORATIVO GLOBAL */
         body {
-            background: radial-gradient(circle at bottom, #8a2be2 0%, #2a0845 100%);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             background-attachment: fixed;
             min-height: 100vh;
-            margin: 0;
             font-family: 'Segoe UI', sans-serif;
         }
-
-        /* Barra superior negra sólida */
         .navbar-custom {
             background-color: #111 !important;
-            border-bottom: 3px solid #6f42c1;
+            border-bottom: 3px solid #4361ee;
         }
-
-        /* Estilo para las tarjetas de contenido */
         .card-contenedor {
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             border: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
-        .letter-spacing-1 { letter-spacing: 1px; }
     </style>
 </head>
-
 <body>
-
-    {% if u or current_user.is_authenticated %}
+    {% if current_user.is_authenticated %}
     <nav class="navbar navbar-dark navbar-custom shadow-sm py-2">
         <div class="container-fluid px-4">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo" height="45" class="me-3 rounded shadow-sm">
-                <span class="fw-bold d-none d-md-inline">CRM APOYO DIRECTO</span>
+                <span class="fw-bold"><i class="fas fa-sim-card me-2"></i>CRM VENTAS BAIT</span>
             </a>
-            
-            <span class="navbar-text text-white fw-bold mx-auto text-uppercase letter-spacing-1">
-                {% if u %}SESIÓN DE {{ u.nombre }} ({{ u.rol }}){% endif %}
+            <span class="navbar-text text-white fw-bold mx-auto text-uppercase">
+                {{ current_user.nombre }} ({{ current_user.rol }})
             </span>
-            
-            <div class="d-flex align-items-center">
-                <div class="text-warning fw-bold fs-5 me-4" style="font-family: monospace;">
-                    <i class="fas fa-clock"></i> <span id="reloj-global">00:00:00</span>
+            <div class="d-flex align-items-center gap-2">
+                <div class="text-info fw-bold fs-5" style="font-family: monospace;">
+                    <i class="fas fa-clock"></i> <span id="reloj">00:00:00</span>
                 </div>
-                <a href="{{ url_for('main.logout') }}" class="btn btn-danger fw-bold shadow border-2" style="letter-spacing: 1px;">
-                    <i class="fas fa-power-off me-1"></i> SALIR
+                <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger btn-sm fw-bold">
+                    <i class="fas fa-power-off"></i> SALIR
                 </a>
             </div>
         </div>
@@ -66,23 +52,21 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show shadow-sm border-2 mb-4" role="alert">
-                        <strong>{{ message }}</strong>
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow" role="alert">
+                        {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
         {% block content %}{% endblock %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         setInterval(() => {
-            const now = new Date();
-            const reloj = document.getElementById('reloj-global');
-            if(reloj) reloj.innerText = now.toLocaleTimeString('es-MX', { hour12: false });
+            const r = document.getElementById('reloj');
+            if (r) r.innerText = new Date().toLocaleTimeString('es-MX', {hour12: false});
         }, 1000);
     </script>
 </body>

@@ -1,46 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow border-0 mx-auto" style="max-width: 450px;">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i> Alta de Nuevo Asesor</h5>
-        </div>
-        <div class="card-body p-4">
-            <form method="POST" action="{{ url_for('main.crear_asesor') }}">
-                
-                <div class="mb-3">
-                    <label class="fw-bold text-muted">Nombre Completo</label>
-                    <input type="text" name="nombre" placeholder="Ej. Juan Pérez" class="form-control" required>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="fw-bold text-muted">Usuario (Login)</label>
-                    <input type="text" name="usuario" placeholder="Ej. jperez" class="form-control" required>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="fw-bold text-muted">Contraseña</label>
-                    <input type="password" name="password" placeholder="Mínimo 6 caracteres" class="form-control" required>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check-circle me-1"></i> Registrar Asesor
-                    </button>
-                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
-                        Volver al Panel
-                    </a>
-                </div>
-                <div class="mb-3">
-    <label class="fw-bold text-muted">Rol del Usuario</label>
-    <select name="rol" class="form-select" required>
-        <option value="ASESOR" selected>ASESOR (Operación)</option>
-        <option value="SUPERVISOR">SUPERVISOR (Reportes)</option>
-        <option value="GERENTE">GERENTE (Control Total)</option>
-    </select>
-</div>
-            </form>
-        </div>
+<div class="card card-contenedor p-4 shadow-lg border-0 mx-auto" style="max-width: 500px;">
+    <div class="card-header bg-dark text-white rounded-3 mb-4 p-3">
+        <h5 class="mb-0"><i class="fas fa-user-tie me-2 text-success"></i> Alta de Nuevo Usuario</h5>
     </div>
+    <form method="POST" action="{{ url_for('main.crear_asesor') }}">
+        <div class="mb-3">
+            <label class="fw-bold text-muted small">Nombre Completo</label>
+            <input type="text" name="nombre" id="inputNombre" class="form-control" placeholder="Ej. Juan Pérez López" required onkeyup="previewUsername()">
+            <div id="previewUsuario" class="mt-2 small text-muted fw-bold"></div>
+        </div>
+        <div class="mb-3">
+            <label class="fw-bold text-muted small">Contraseña</label>
+            <input type="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <div class="mb-4">
+            <label class="fw-bold text-muted small">Rol</label>
+            <select name="rol" class="form-select" required>
+                <option value="ASESOR" selected>ASESOR</option>
+                <option value="SUPERVISOR">SUPERVISOR</option>
+                <option value="GERENTE">GERENTE</option>
+            </select>
+        </div>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success fw-bold"><i class="fas fa-check-circle me-1"></i> Registrar</button>
+            <a href="{{ url_for('main.admin_usuarios') }}" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
 </div>
+
+<script>
+let previewTimeout;
+function previewUsername() {
+    clearTimeout(previewTimeout);
+    const nombre = document.getElementById('inputNombre').value.trim();
+    const div = document.getElementById('previewUsuario');
+    if (nombre.length < 3) {
+        div.innerHTML = '';
+        return;
+    }
+    previewTimeout = setTimeout(() => {
+        fetch('{{ url_for("main.api_preview_username") }}?nombre=' + encodeURIComponent(nombre))
+            .then(r => r.json())
+            .then(data => {
+                if (data.username) {
+                    const badge = data.exists
+                        ? '<span class="badge bg-warning text-dark">(existía, auto-renombrado)</span>'
+                        : '<span class="badge bg-success">disponible</span>';
+                    div.innerHTML = 'Usuario auto-generado: <code>' + data.username + '</code> ' + badge;
+                }
+            });
+    }, 300);
+}
+</script>
 {% endblock %}

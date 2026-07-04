@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+{% set es_admin = current_user.rol in ['GERENTE', 'SUPERVISOR'] %}
+
+<div class="card card-contenedor p-4 shadow-lg border-0 mx-auto" style="max-width: 700px;">
+    <div class="card-header bg-dark text-white rounded-3 mb-4 p-3">
+        <h5 class="mb-0"><i class="fas fa-plus-circle me-2 text-primary"></i> Registrar Nueva Venta BAIT</h5>
+    </div>
+
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="fw-bold text-muted small">Fecha de Venta</label>
+                <input type="date" name="fecha_venta" class="form-control" value="{{ hoy }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold text-muted small">Tipo de Venta</label>
+                <select name="tipo_venta" class="form-select" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="Nueva Línea">Nueva Línea</option>
+                    <option value="Portabilidad">Portabilidad</option>
+                    <option value="Renovación">Renovación</option>
+                    <option value="Equipo Libre">Equipo Libre</option>
+                    <option value="Recarga">Recarga</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold text-muted small">Número</label>
+                <input type="text" name="numero" class="form-control" placeholder="5512345678" required>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold text-muted small">IMEI</label>
+                <input type="text" name="imei" class="form-control" placeholder="IMEI del equipo" required>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold text-muted small">NI</label>
+                <input type="text" name="ni" class="form-control" placeholder="Número de identificación" required>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold text-muted small">Nombre(s) del Cliente</label>
+                <input type="text" name="cliente_nombre" class="form-control" placeholder="Juan" required>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold text-muted small">Apellidos del Cliente</label>
+                <input type="text" name="cliente_apellidos" class="form-control" placeholder="Pérez López" required>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold text-muted small">Método de Contactación</label>
+                <select name="metodo_contactacion" class="form-select" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="Llamada">Llamada</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="SMS">SMS</option>
+                    <option value="Correo">Correo</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="Facebook">Facebook</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold text-muted small">Vigencia del NIP</label>
+                <input type="date" name="vigencia_nip" class="form-control">
+            </div>
+
+            {% if es_admin and agentes %}
+            <div class="col-12">
+                <label class="fw-bold text-muted small">Asignar a Asesor</label>
+                <select name="asesor_id" class="form-select">
+                    <option value="">Seleccionar asesor...</option>
+                    {% for a in agentes %}
+                    <option value="{{ a.id }}">{{ a.nombre }} ({{ a.usuario }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary fw-bold px-4"><i class="fas fa-save me-1"></i> Guardar Venta</button>
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary fw-bold px-4">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
